@@ -1,0 +1,236 @@
+:root {
+  color: #23313f;
+  background: #101820;
+  cursor: url("/assets/ui/large-pointer.svg") 6 4, default;
+  font-family:
+    Inter, ui-rounded, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+button,
+select {
+  cursor: url("/assets/ui/large-pointer.svg") 6 4, pointer;
+  font: inherit;
+}
+
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 199, 219, 0.24), transparent 34%),
+    linear-gradient(145deg, #101820 0%, #1d3140 48%, #203f43 100%);
+}
+
+.game-stage {
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  height: min(100dvh, calc(100vw * 9 / 16));
+  overflow: hidden;
+  background: #8dd8ff;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.game-host,
+.game-host canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.parent-panel {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  z-index: 4;
+  display: flex;
+  width: 178px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(45, 57, 70, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 12px 34px rgba(31, 45, 60, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+.portrait-hint {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  color: #314154;
+  text-align: center;
+  background: rgba(255, 250, 244, 0.9);
+  pointer-events: none;
+}
+
+.portrait-hint strong,
+.portrait-hint span {
+  display: block;
+}
+
+.portrait-hint strong {
+  margin-bottom: 8px;
+  color: #df6291;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.portrait-hint span {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.panel-button {
+  min-height: 34px;
+  border: 1px solid rgba(34, 48, 61, 0.18);
+  border-radius: 9px;
+  background: #ffffff;
+  color: #273544;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.panel-button {
+  width: 100%;
+  padding: 0 9px;
+}
+
+.reset-button {
+  border-color: rgba(255, 126, 170, 0.45);
+  color: #9d385f;
+}
+
+.panel-button span {
+  margin-left: 4px;
+  color: #6c7a86;
+  font-weight: 850;
+}
+
+.player-picker,
+.ball-picker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.player-picker > span,
+.ball-picker legend {
+  display: block;
+  margin-bottom: 6px;
+  color: #53606d;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.player-options,
+.ball-options {
+  display: flex;
+  gap: 7px;
+}
+
+.player-option {
+  min-height: 28px;
+  flex: 1;
+  border: 1px solid rgba(34, 48, 61, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #53606d;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.player-option.active {
+  border-color: #f36f9b;
+  background: #fff0f5;
+  color: #a53d64;
+}
+
+.ball-swatch {
+  width: 31px;
+  height: 31px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(39, 53, 68, 0.14);
+}
+
+.ball-swatch.active {
+  box-shadow: 0 0 0 3px #f36f9b;
+}
+
+.ball-swatch.pink {
+  background: #f36f9b;
+}
+
+.ball-swatch.orange {
+  background: #f58b23;
+}
+
+.ball-swatch.yellow {
+  background: #f6bd31;
+}
+
+@media (max-width: 1400px) and (min-height: 541px) {
+  .parent-panel {
+    transform: scale(0.76);
+    transform-origin: right top;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .portrait-hint {
+    display: grid;
+  }
+
+  .parent-panel {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape), (orientation: landscape) and (max-height: 540px) {
+  .app-shell {
+    display: block;
+    background: #102634;
+  }
+
+  .game-stage {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .parent-panel {
+    top: max(5px, env(safe-area-inset-top));
+    right: max(5px, env(safe-area-inset-right));
+    transform: scale(0.67);
+    transform-origin: right top;
+  }
+}

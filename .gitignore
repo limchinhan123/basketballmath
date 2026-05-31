@@ -1,0 +1,12 @@
+node_modules/
+dist/
+qa/
+tmp/
+.DS_Store
+.env
+.env.*
+.vercel/
+*.log
+public/assets/references/
+public/assets/players/*-source.png
+.vercel

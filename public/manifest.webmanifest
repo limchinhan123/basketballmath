@@ -1,0 +1,9 @@
+{
+  "name": "Math Basketball",
+  "short_name": "Math Hoops",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#102634",
+  "theme_color": "#f36f9b"
+}

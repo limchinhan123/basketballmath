@@ -1,0 +1,26 @@
+{
+  "name": "math-basketball",
+  "version": "0.1.0",
+  "description": "A Singapore HDB basketball-court mathematics game for young children.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5176",
+    "build": "tsc && vite build",
+    "qa": "node scripts/qa_game.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4176"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "phaser": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "playwright": "latest"
+  }
+}
