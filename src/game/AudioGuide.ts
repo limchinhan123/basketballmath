@@ -1,8 +1,15 @@
+import type { NarrationLanguage } from './types';
+
 export class AudioGuide {
   private context: AudioContext | null = null;
   private musicTimer: number | null = null;
   private musicStep = 0;
   private muted = false;
+  private language: NarrationLanguage;
+
+  constructor(language: NarrationLanguage = 'en') {
+    this.language = language;
+  }
 
   unlock() {
     if (!this.context || this.context.state === 'closed') {
@@ -16,6 +23,11 @@ export class AudioGuide {
   setMuted(muted: boolean) {
     this.muted = muted;
     if (muted) window.speechSynthesis.cancel();
+  }
+
+  setLanguage(language: NarrationLanguage) {
+    this.language = language;
+    window.speechSynthesis.cancel();
   }
 
   startMusic() {
@@ -71,8 +83,16 @@ export class AudioGuide {
       if (this.muted) return;
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.84;
-      utterance.pitch = 1.14;
+      const locale = this.language === 'zh' ? 'zh-CN' : 'en-US';
+      const languagePrefix = this.language === 'zh' ? 'zh' : 'en';
+      utterance.lang = locale;
+      utterance.voice = window.speechSynthesis.getVoices().find((voice) => (
+        voice.lang.toLowerCase() === locale.toLowerCase()
+      )) ?? window.speechSynthesis.getVoices().find((voice) => (
+        voice.lang.toLowerCase().startsWith(languagePrefix)
+      )) ?? null;
+      utterance.rate = this.language === 'zh' ? 0.8 : 0.84;
+      utterance.pitch = this.language === 'zh' ? 1.06 : 1.14;
       utterance.volume = 0.72;
       window.speechSynthesis.speak(utterance);
     }, delay);

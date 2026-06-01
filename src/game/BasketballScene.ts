@@ -1,7 +1,14 @@
 import Phaser from 'phaser';
 import { AudioGuide } from './AudioGuide';
 import { generateQuestionSet } from './questions';
-import type { BallColor, GameSettings, MathQuestion, PlayerId, PlayerMode } from './types';
+import type {
+  BallColor,
+  GameSettings,
+  MathQuestion,
+  NarrationLanguage,
+  PlayerId,
+  PlayerMode,
+} from './types';
 
 const GAME_WIDTH = 1600;
 const GAME_HEIGHT = 900;
@@ -20,7 +27,7 @@ const BALL_COLORS: Record<BallColor, { base: number; dark: number; light: number
   yellow: { base: 0xf6bd31, dark: 0xb57912, light: 0xffe27d },
 };
 
-let persistedSettings: GameSettings = { playerMode: 'pair', ballColor: 'pink' };
+let persistedSettings: GameSettings = { playerMode: 'pair', ballColor: 'pink', narrationLanguage: 'en' };
 
 const PLAYER_SCALE: Record<PlayerId, number> = {
   rae: 0.45,
@@ -54,6 +61,7 @@ type BasketballDebugState = {
   firstTryScore: number;
   inputEnabled: boolean;
   operation: string;
+  narrationLanguage: NarrationLanguage;
   playerMode: PlayerMode;
   questionIndex: number;
   recapActive: boolean;
@@ -69,7 +77,7 @@ type BasketballDebugWindow = Window & {
 
 export class BasketballScene extends Phaser.Scene {
   private settings: GameSettings = { ...persistedSettings };
-  private audio = new AudioGuide();
+  private audio = new AudioGuide(this.settings.narrationLanguage);
   private questions: MathQuestion[] = [];
   private questionIndex = 0;
   private score = 0;
@@ -138,7 +146,7 @@ export class BasketballScene extends Phaser.Scene {
     this.paused = false;
     this.recapActive = false;
     this.inputEnabled = false;
-    this.audio = new AudioGuide();
+    this.audio = new AudioGuide(this.settings.narrationLanguage);
 
     this.createRuntimeBallTextures();
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'court').setDisplaySize(GAME_WIDTH, GAME_HEIGHT);
@@ -451,6 +459,19 @@ export class BasketballScene extends Phaser.Scene {
       const muted = Boolean((event as CustomEvent<{ muted?: boolean }>).detail?.muted);
       this.audio.setMuted(muted);
     });
+    this.listen('mbg:set-narration-language', (event) => {
+      const language = (event as CustomEvent<{ language?: NarrationLanguage }>).detail?.language;
+      if (!language || !['en', 'zh'].includes(language) || language === this.settings.narrationLanguage) return;
+      this.settings.narrationLanguage = language;
+      persistedSettings = { ...this.settings };
+      this.audio.setLanguage(language);
+      if (this.started && !this.paused && !this.recapActive) {
+        this.narrateQuestion(80);
+      } else {
+        this.audio.speak(language === 'zh' ? '已选择中文语音。' : 'English voice selected.', 40);
+      }
+      this.publishDebugState();
+    });
     this.listen('mbg:set-player-mode', (event) => {
       const mode = (event as CustomEvent<{ mode?: PlayerMode }>).detail?.mode;
       if (!mode || !['pair', 'rae', 'zoe'].includes(mode) || mode === this.settings.playerMode) return;
@@ -650,7 +671,7 @@ export class BasketballScene extends Phaser.Scene {
     if (correct) {
       if (this.wrongAttempts === 0) this.firstTryScore += 1;
       this.feedbackText?.setText('Great shot!');
-      this.audio.speak('Great shot!', 160);
+      this.audio.speak(this.localized('Great shot!', '投得好！'), 160);
       this.shootBall(true);
     } else {
       this.wrongAttempts += 1;
@@ -808,7 +829,10 @@ export class BasketballScene extends Phaser.Scene {
     this.resetBallToDribble();
     this.startDribble();
     this.inputEnabled = true;
-    this.audio.speak(`The answer is ${this.currentQuestion.answer}. Try again.`, 120);
+    this.audio.speak(this.localized(
+      `The answer is ${this.currentQuestion.answer}. Try again.`,
+      `答案是 ${this.currentQuestion.answer}。再试一次。`,
+    ), 120);
     this.publishDebugState();
   }
 
@@ -829,10 +853,15 @@ export class BasketballScene extends Phaser.Scene {
     this.publishDebugState();
   }
 
-  private narrateQuestion() {
+  private narrateQuestion(delay = 180) {
     const question = this.currentQuestion;
+    if (this.settings.narrationLanguage === 'zh') {
+      const operation = question.operation === '+' ? '加' : '减';
+      this.audio.speak(`${question.left} ${operation} ${question.right}。数一数篮球。答案是多少？`, delay);
+      return;
+    }
     const operation = question.operation === '+' ? 'plus' : 'minus';
-    this.audio.speak(`${question.left} ${operation} ${question.right}. Count the basketballs. What is the answer?`, 180);
+    this.audio.speak(`${question.left} ${operation} ${question.right}. Count the basketballs. What is the answer?`, delay);
   }
 
   private startDribble() {
@@ -943,7 +972,10 @@ export class BasketballScene extends Phaser.Scene {
     this.recapOverlay?.setVisible(true);
     this.recapScoreText?.setText('15 / 15 baskets').setVisible(true);
     this.recapFirstTryText?.setText(`First try: ${this.firstTryScore} / 15`).setVisible(true);
-    this.audio.speak(`Hooray! You made all 15 baskets. ${this.firstTryScore} on the first try!`, 180);
+    this.audio.speak(this.localized(
+      `Hooray! You made all 15 baskets. ${this.firstTryScore} on the first try!`,
+      `太棒了！你投进了十五个球。第一次就答对了 ${this.firstTryScore} 题！`,
+    ), 180);
     this.publishDebugState();
   }
 
@@ -1005,6 +1037,10 @@ export class BasketballScene extends Phaser.Scene {
     return `ball-${this.settings.ballColor}`;
   }
 
+  private localized(english: string, mandarin: string) {
+    return this.settings.narrationLanguage === 'zh' ? mandarin : english;
+  }
+
   private publishDebugState() {
     const question = this.currentQuestion;
     if (!question) return;
@@ -1015,6 +1051,7 @@ export class BasketballScene extends Phaser.Scene {
       choices: question.choices,
       firstTryScore: this.firstTryScore,
       inputEnabled: this.inputEnabled,
+      narrationLanguage: this.settings.narrationLanguage,
       operation: `${question.left} ${question.operation} ${question.right}`,
       playerMode: this.settings.playerMode,
       questionIndex: this.questionIndex,

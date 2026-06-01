@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createMathBasketballGame } from './game/createMathBasketballGame';
-import type { BallColor, PlayerMode } from './game/types';
+import type { BallColor, NarrationLanguage, PlayerMode } from './game/types';
 
 const playerLabels: Record<PlayerMode, string> = {
   pair: 'Both',
@@ -14,12 +14,18 @@ const ballColors: Array<{ id: BallColor; label: string }> = [
   { id: 'yellow', label: 'Yellow' },
 ];
 
+const narrationLanguages: Array<{ id: NarrationLanguage; label: string }> = [
+  { id: 'en', label: 'English' },
+  { id: 'zh', label: '中文' },
+];
+
 export function App() {
   const gameHostRef = useRef<HTMLDivElement | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [playerMode, setPlayerMode] = useState<PlayerMode>('pair');
   const [ballColor, setBallColor] = useState<BallColor>('pink');
+  const [narrationLanguage, setNarrationLanguage] = useState<NarrationLanguage>('en');
 
   useEffect(() => {
     if (!gameHostRef.current) return;
@@ -103,6 +109,28 @@ export function App() {
                     event.currentTarget.blur();
                   }}
                 />
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="voice-picker">
+            <legend>Voice</legend>
+            <div className="language-options">
+              {narrationLanguages.map((option) => (
+                <button
+                  key={option.id}
+                  className={`language-option ${narrationLanguage === option.id ? 'active' : ''}`}
+                  type="button"
+                  aria-label={`${option.id === 'zh' ? 'Mandarin' : 'English'} narration`}
+                  aria-pressed={narrationLanguage === option.id}
+                  onClick={(event) => {
+                    setNarrationLanguage(option.id);
+                    send('mbg:set-narration-language', { language: option.id });
+                    event.currentTarget.blur();
+                  }}
+                >
+                  {option.label}
+                </button>
               ))}
             </div>
           </fieldset>

@@ -30,7 +30,8 @@ the correct answer, and gives the same child another try.
 - **Retry without penalty:** an incorrect answer shows the correct answer and
   lets the same child try again.
 - **Audio guidance:** the game reads each equation aloud and provides spoken
-  feedback after every attempt.
+  feedback after every attempt, with parent-selectable English and Mandarin
+  narration.
 - **Large interaction targets:** three answer buttons and a high-contrast custom
   pointer make the game easier for small hands to follow.
 
@@ -69,6 +70,7 @@ The compact top-right panel stays clear of the cheering family:
 - Pause or resume the game.
 - Stop and reset the current round.
 - Mute or restore audio.
+- Switch spoken guidance between `English` and `中文`.
 
 ## Tech Stack
 

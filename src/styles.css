@@ -134,14 +134,16 @@ select {
 }
 
 .player-picker,
-.ball-picker {
+.ball-picker,
+.voice-picker {
   margin: 0;
   padding: 0;
   border: 0;
 }
 
 .player-picker > span,
-.ball-picker legend {
+.ball-picker legend,
+.voice-picker legend {
   display: block;
   margin-bottom: 6px;
   color: #53606d;
@@ -150,7 +152,8 @@ select {
 }
 
 .player-options,
-.ball-options {
+.ball-options,
+.language-options {
   display: flex;
   gap: 7px;
 }
@@ -166,10 +169,22 @@ select {
   font-weight: 850;
 }
 
-.player-option.active {
+.player-option.active,
+.language-option.active {
   border-color: #f36f9b;
   background: #fff0f5;
   color: #a53d64;
+}
+
+.language-option {
+  min-height: 28px;
+  flex: 1;
+  border: 1px solid rgba(34, 48, 61, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #53606d;
+  font-size: 10px;
+  font-weight: 850;
 }
 
 .ball-swatch {
@@ -223,6 +238,12 @@ select {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
+  }
+
+  .game-host canvas {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
   }
 }
 

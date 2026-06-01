@@ -97,6 +97,14 @@ if (orangeState.ballColor !== 'orange') {
 }
 await screenshot('07b-orange-ball.png');
 
+await page.locator('button[aria-label="Mandarin narration"]').click();
+await page.waitForFunction(() => window.__mbgDebug?.narrationLanguage === 'zh', null, { timeout: 5000 });
+const mandarinState = await debug();
+await screenshot('07c-mandarin-narration.png');
+
+await page.locator('button[aria-label="English narration"]').click();
+await page.waitForFunction(() => window.__mbgDebug?.narrationLanguage === 'en', null, { timeout: 5000 });
+
 await page.locator('button[aria-label="Yellow basketball"]').click();
 await page.locator('button[aria-label="Zoe player mode"]').click();
 await page.waitForTimeout(300);
@@ -146,6 +154,7 @@ const summary = {
   rotationState,
   yellowState,
   orangeState,
+  mandarinState,
   singleZoeState,
   singleRaeState,
   recapState,
