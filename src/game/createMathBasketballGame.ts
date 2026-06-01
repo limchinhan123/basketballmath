@@ -9,7 +9,7 @@ export function createMathBasketballGame(parent: HTMLElement) {
     height: 900,
     backgroundColor: '#8fdfff',
     scale: {
-      mode: Phaser.Scale.ENVELOP,
+      mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
       fullscreenTarget: parent,
     },
